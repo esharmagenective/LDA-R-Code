@@ -12,10 +12,6 @@ Version <- "Aa"  #change this if you are doing multiple runs
 ConstructListFile <- "23048_Constructs.xlsx"
 
 
-##Where data is located:
-wd <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working"
-setwd(wd)
-
 
 #Update Controls List if necessary: keep in order of ZsGreen, tox negative control, other controls
 ControlConstructs <- c("285", "321", "212", "8", "345", "320")
@@ -32,10 +28,24 @@ xtext <- 8
 #End Editing here, just run the script and hope.
 ####################################################################################################
 ####################################################################################################
-#Just for Lindsey:
-if (wd == "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working") {
-  Sys.setenv(JAVA_HOME="C:/Program Files/Eclipse Adoptium/jre-11.0.18.10-hotspot")
+User <- as.character(Sys.info()["user"])
+User
+if (User == "KatieDent") {
+  wd <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working"
+  RawDataFolder <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working/LDA Raw Data"
+} else {
+  if ( User == "EshaSharma") {
+    wd <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working"
+    RawDataFolder <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working/LDA Raw Data"
+  } else {
+    if ( User == "LindseyBehrens") {
+      wd <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working"
+      RawDataFolder <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working/LDA Raw Data"
+      Sys.setenv(JAVA_HOME="C:/Program Files/Eclipse Adoptium/jre-11.0.18.10-hotspot")
+    }
+  }
 }
+
 
 #Packages to install
 library(MASS)
