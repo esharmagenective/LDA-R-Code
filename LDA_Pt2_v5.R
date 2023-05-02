@@ -2,14 +2,14 @@
 #remember to replace TP with TWP
 
 ## ID of Experiment: 
-Experiment <- "23028"
-Experiment_Title <- "23028"
-Version <- "A"  #change this if you are doing multiple runs
+Experiment <- "23048"
+Experiment_Title <- "23048"
+Version <- "Aa"  #change this if you are doing multiple runs
 
 
 
 #Place Construct List in R working directory
-ConstructListFile <- "23028_Constructs.xlsx"
+ConstructListFile <- "23048_Constructs.xlsx"
 
 
 ##Where data is located:
@@ -277,6 +277,23 @@ MeanList$Construct <- as.character(MeanList$Construct)
 OrderList <- c(ConCon,ExpCon)
 MeanList <- MeanList[match(OrderList, MeanList$Construct),]
 write.xlsx(x= MeanList, file = "MeanList.xlsx")
+
+
+NList <- Descriptions
+NList$Description <- NULL
+for (Bug in Bugs) {
+  Sheet <- read_excel("FeedingStats.xlsx", Bug)
+  set <- Sheet[, c("Construct", "n")]
+  #set$n <- as.numeric(format(round(set$n, 2), nsmall = 2))
+  set[,paste(Bug, "n", sep= "_")] <- set$n
+  set$n <- NULL
+  NList <- merge(NList, set, by = "Construct", all= TRUE)
+}
+NList$n <- NULL
+NList$Construct <- as.character(NList$Construct)
+OrderList <- c(ConCon,ExpCon)
+NList <- NList[match(OrderList, NList$Construct),]
+write.xlsx(x= NList, file = "n_List.xlsx")
 
 
 
@@ -628,6 +645,15 @@ slides <- ph_with(slides, value = ToxMeanList, location = loc_table)
 slides <- add_slide(slides, layout= "Title and Content")
 slides <- ph_with(slides, value = "Next Steps", location = ph_location_type(type = "title"))
 slides <- ph_with(slides, value = "Add Next Steps here", location = ph_location_type(type = "body"))
+slides <- ph_with(slides, value = "Confidential", location = ph_location_type(type = "ftr"))
+slides <- ph_with(slides, external_img(logo), location = loc_logo)
+slides <- ph_with(slides, value = date2, location = ph_location_type(type = "dt"))
+
+
+# n= slide
+slides <- add_slide(slides, layout= "Title and Content")
+slides <- ph_with(slides, value = "Replicates Used", location = ph_location_type(type = "title"))
+slides <- ph_with(slides, value = NList, location = loc_table)
 slides <- ph_with(slides, value = "Confidential", location = ph_location_type(type = "ftr"))
 slides <- ph_with(slides, external_img(logo), location = loc_logo)
 slides <- ph_with(slides, value = date2, location = ph_location_type(type = "dt"))
