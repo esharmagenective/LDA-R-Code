@@ -15,10 +15,6 @@ Experiment <- "23028"
 ConstructListFile <- "23028_Constructs.xlsx"
 
 
-#Controls to ignore in search:
-Ignore <- c("8","212","285","321","345","320")
-
-
 ############################################################################################################
 #Just for Lindsey:
 if ((wd == "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working") == TRUE ) {
@@ -61,8 +57,12 @@ FileName <- paste(Experiment, "Data",".xlsx", sep= "")
 
 #What Constructs are we looking for?
 ConstructList <- read_excel(ConstructListFile, skip = 7)
-search <- ConstructList$Construct
-search_list <- as.character(search[!(search %in% Ignore)])
+
+#subset ConstructList by Control column
+notcontrols<-subset(ConstructList,Control!="Y")
+
+search <- notcontrols$Construct
+search_list <- as.character(search)
 #search_list <- c("TWP280", "TWP10", "285")
 
 
