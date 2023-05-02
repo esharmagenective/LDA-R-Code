@@ -45,7 +45,7 @@ if (User == "KatieDent") {
     }
   }
 }
-
+setwd(wd)
 
 #Packages to install
 library(MASS)

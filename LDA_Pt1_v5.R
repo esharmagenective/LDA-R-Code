@@ -1,9 +1,9 @@
 #What is the experiment number?
-Experiment <- "23028"
+Experiment <- "23045"
 
 
 #Place Construct List in R working directory
-ConstructListFile <- "23028_Constructs.xlsx"
+ConstructListFile <- "23045_Constructs.xlsx"
 
 
 ############################################################################################################
@@ -24,7 +24,7 @@ if (User == "KatieDent") {
       }
     }
 }
-
+setwd(wd)
 
 
 
@@ -57,10 +57,7 @@ library("pacman")
 
 
 
-
-
 FileName <- paste(Experiment, "Data",".xlsx", sep= "")
-
 
 
 
@@ -68,8 +65,10 @@ FileName <- paste(Experiment, "Data",".xlsx", sep= "")
 #What Constructs are we looking for?
 ConstructList <- read_excel(ConstructListFile, skip = 7)
 
+
 #subset ConstructList by Control column
 notcontrols<-subset(ConstructList,Control!="Y")
+
 
 search <- notcontrols$Construct
 search_list <- as.character(search)
