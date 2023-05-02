@@ -14,8 +14,8 @@ if (User == "KatieDent") {
   RawDataFolder <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working/LDA Raw Data"
   } else {
     if ( User == "EshaSharma") {
-      wd <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working"
-      RawDataFolder <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working/LDA Raw Data"
+      wd <- "C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Desktop/R Studio/LDA Data"
+      RawDataFolder <- "C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Desktop/R Studio/LDA Data/LDA Raw Data"
     } else {
       if ( User == "LindseyBehrens") {
         wd <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working"
