@@ -1,12 +1,3 @@
-
-#Normal Working Directory:
-wd <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working"
-setwd(wd)
-
-#Copy Raw Data Files to a working subfolder
-RawDataFolder <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working/LDA Raw Data"
-
-
 #What is the experiment number?
 Experiment <- "23028"
 
@@ -16,10 +7,26 @@ ConstructListFile <- "23028_Constructs.xlsx"
 
 
 ############################################################################################################
-#Just for Lindsey:
-if ((wd == "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working") == TRUE ) {
-  Sys.setenv(JAVA_HOME="C:/Program Files/Eclipse Adoptium/jre-11.0.18.10-hotspot")
+User <- as.character(Sys.info()["user"])
+User
+if (User == "KatieDent") {
+  wd <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working"
+  RawDataFolder <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working/LDA Raw Data"
+  } else {
+    if ( User == "EshaSharma") {
+      wd <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working"
+      RawDataFolder <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working/LDA Raw Data"
+    } else {
+      if ( User == "LindseyBehrens") {
+        wd <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working"
+        RawDataFolder <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working/LDA Raw Data"
+        Sys.setenv(JAVA_HOME="C:/Program Files/Eclipse Adoptium/jre-11.0.18.10-hotspot")
+      }
+    }
 }
+
+
+
 
 library(MASS)
 library(car)
@@ -46,6 +53,9 @@ library("stringr")
 library('officer') 
 library("readr")
 library("pacman")
+
+
+
 
 
 
