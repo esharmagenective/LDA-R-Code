@@ -31,8 +31,8 @@ xtext <- 8
 User <- as.character(Sys.info()["user"])
 User
 if (User == "KatieDent") {
-  wd <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working"
-  RawDataFolder <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working/LDA Raw Data"
+  wd <- "C:/Users/KatieDent/OneDrive - Genective/R working"
+  RawDataFolder <- "C:/Users/KatieDent/OneDrive - Genective/R working/LDA Raw Data"
 } else {
   if ( User == "EshaSharma") {
     wd <- "C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Desktop/R Studio/LDA Data"
