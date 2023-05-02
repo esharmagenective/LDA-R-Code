@@ -2,14 +2,14 @@
 #remember to replace TP with TWP
 
 ## ID of Experiment: 
-Experiment <- "23048"
-Experiment_Title <- "23048"
-Version <- "Aa"  #change this if you are doing multiple runs
+Experiment <- "23044"
+Experiment_Title <- "23044"
+Version <- "B"  #change this if you are doing multiple runs
 
 
 
 #Place Construct List in R working directory
-ConstructListFile <- "23048_Constructs.xlsx"
+ConstructListFile <- "23044_Constructs.xlsx"
 
 
 
@@ -441,14 +441,14 @@ Tavg <- ToxData %>%
     summarize(Late_min = min(Late_Tox),
               Late_q1 = quantile(Late_Tox, 0.25),
               Late_median = median(Late_Tox),
-              Late_mean = mean(Late_Tox),
+              Late_Tox = mean(Late_Tox),
               Late_q3 = quantile(Late_Tox, 0.75),
               Late_max = max(Late_Tox),
               n = length(Late_Tox),
               Early_min = min(Early_Tox),
               Early_q1 = quantile(Early_Tox, 0.25),
               Early_median = median(Early_Tox),
-              Early_mean = mean(Early_Tox),
+              Early_Tox = mean(Early_Tox),
               Early_q3 = quantile(Early_Tox, 0.75),
               Early_max = max(Early_Tox))
   write.xlsx(x= Tavg, file = "ToxStats.xlsx")
