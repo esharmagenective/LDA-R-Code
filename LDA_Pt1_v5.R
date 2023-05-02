@@ -131,9 +131,26 @@ for (ThisFile in matched_sheets[,1]) { #loop through each file
 ExperimentData <-subset(ExperimentData, Plate != "Invalid")
 ExperimentData <-subset(ExperimentData, Plate != "invalid")
 ExperimentData$Rating <- as.numeric(ExperimentData$Rating)
-ExperimentData
+ExperimentData$Date <- as.Date(ExperimentData$Date)
+head(ExperimentData)
 
 
+Bugs <- as.vector(unique(ExperimentData$Pest)) 
+ExperimentData2 <- data.frame(matrix(ncol=5, nrow=0))
+colnames(ExperimentData2) <- c("Date","Pest","Plate","Construct","Rating")
+for (Bug in Bugs) { #loop through each pest
+  BugSet <- subset(ExperimentData, Pest == Bug)
+  BugDates <- as.Date(unique(BugSet$Date))
+  for (ThisDate in BugDates) {
+    DateSet <- subset(BugSet, Date == ThisDate)
+    DateCons <- unique(DateSet$Construct)
+    Result <- search_list %in% DateCons
+    Result
+    if (TRUE %in% Result) {
+      ExperimentData2 <- rbind(ExperimentData2, DateSet)
+    }
+  }
+}
 
 
 #prints all data to an Excel File
