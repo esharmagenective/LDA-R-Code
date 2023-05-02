@@ -442,7 +442,7 @@ Tavg <- ToxData %>%
               Early_q3 = quantile(Early_Tox, 0.75),
               Early_max = max(Early_Tox))
   write.xlsx(x= Tavg, file = "ToxStats.xlsx")
-Tavg2 <- Tavg[,c("Construct", "Early_mean", "Late_mean", "n")]
+Tavg2 <- Tavg[,c("Construct", "Early_Tox", "Late_Tox", "n")]
 
 ToxMeanList <- Descriptions
 ToxMeanList$Description <- NULL
