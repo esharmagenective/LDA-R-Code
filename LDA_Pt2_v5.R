@@ -12,7 +12,6 @@ Version <- "B"  #change this if you are doing multiple runs
 ConstructListFile <- "23044_Constructs.xlsx"
 
 
-
 #Update Controls List if necessary: keep in order of ZsGreen, tox negative control, other controls
 ControlConstructs <- c("285", "321", "212", "8", "345", "320")
 
