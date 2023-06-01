@@ -2,14 +2,14 @@
 #remember to replace TP with TWP
 
 ## ID of Experiment: 
-Experiment <- "23044"
-Experiment_Title <- "23044"
-Version <- "B"  #change this if you are doing multiple runs
+Experiment <- "23060"
+Experiment_Title <- "23060"
+Version <- "A"  #change this if you are doing multiple runs
 
 
 
 #Place Construct List in R working directory
-ConstructListFile <- "23044_Constructs.xlsx"
+ConstructListFile <- "23060_Constructs.xlsx"
 
 
 #Update Controls List if necessary: keep in order of ZsGreen, tox negative control, other controls
@@ -142,6 +142,8 @@ FeedingData$Construct <- gsub("TP", "TWP", FeedingData$Construct, fixed=T)
 FeedingData$Construct <- gsub("TP ", "TWP", FeedingData$Construct, fixed=T)
 FeedingData$Construct <- gsub("TWP ", "TWP", FeedingData$Construct, fixed=T)
 FeedingData$Construct <- gsub("TWP-", "TWP", FeedingData$Construct, fixed=T)
+FeedingData$Rating <- gsub("0", "NA", FeedingData$Rating, fixed=T)
+FeedingData$Rating <- as.numeric(FeedingData$Rating)
 FeedingData <- na.omit (FeedingData) 
 FeedingData <- merge(FeedingData, Descriptions, "Construct")
 head(FeedingData)
