@@ -20,7 +20,7 @@ if (User == "KatieDent") {
       if ( User == "LindseyBehrens") {
         wd <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working"
         RawDataFolder <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working/LDA Raw Data"
-        Sys.setenv(JAVA_HOME="C:/Program Files/Eclipse Adoptium/jre-11.0.18.10-hotspot")
+        Sys.setenv(JAVA_HOME="C:/Program Files/Eclipse Adoptium/jre-11.0.19.7-hotspot")
       }
     }
 }
