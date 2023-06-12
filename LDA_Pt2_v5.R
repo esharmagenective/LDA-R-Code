@@ -2,18 +2,18 @@
 #remember to replace TP with TWP
 
 ## ID of Experiment: 
-Experiment <- "23060"
-Experiment_Title <- "23060"
-Version <- "A"  #change this if you are doing multiple runs
+Experiment <- "23059"
+Experiment_Title <- "23059: GUN1226A"
+Version <- "C"  #change this if you are doing multiple runs
 
 
 
 #Place Construct List in R working directory
-ConstructListFile <- "23060_Constructs.xlsx"
+ConstructListFile <- "23059_Constructs.xlsx"
 
 
 #Update Controls List if necessary: keep in order of ZsGreen, tox negative control, other controls
-ControlConstructs <- c("285", "321", "212", "8", "345", "320")
+ControlConstructs <- c("285", "321", "212", "8", "345", "320", "NT")
 
 
 #Change x-axis text size
@@ -40,7 +40,7 @@ if (User == "KatieDent") {
     if ( User == "LindseyBehrens") {
       wd <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working"
       RawDataFolder <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working/LDA Raw Data"
-      Sys.setenv(JAVA_HOME="C:/Program Files/Eclipse Adoptium/jre-11.0.18.10-hotspot")
+      Sys.setenv(JAVA_HOME="C:/Program Files/Eclipse Adoptium/jre-11.0.19.7-hotspot")
     }
   }
 }
