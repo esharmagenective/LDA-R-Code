@@ -32,15 +32,18 @@ User
 if (User == "KatieDent") {
   wd <- "C:/Users/KatieDent/OneDrive - Genective/R working"
   RawDataFolder <- "C:/Users/KatieDent/OneDrive - Genective/R working/LDA Raw Data"
+  HiBiT <- read_excel("C:/Users/KatieDent/OneDrive - Genective/Data/Western Blots/HiBiT Results_Read Only.xlsx")
 } else {
   if ( User == "EshaSharma") {
     wd <- "C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Desktop/R Studio/LDA Data"
     RawDataFolder <- "C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Desktop/R Studio/LDA Data/LDA Raw Data"
+    HiBiT <- read_excel("C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Data/Western Blots/HiBiT Results_Read Only.xlsx")
   } else {
     if ( User == "LindseyBehrens") {
       wd <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working"
       RawDataFolder <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working/LDA Raw Data"
       Sys.setenv(JAVA_HOME="C:/Program Files/Eclipse Adoptium/jre-11.0.19.7-hotspot")
+      HiBiT <- read_excel("C:/Users/LindseyBehrens/OneDrive - Genective/Data/Western Blots/HiBiT Results_Read Only.xlsx")
     }
   }
 }
@@ -511,6 +514,91 @@ Twil <- pairwise.wilcox.test(ToxData$Late_Tox, ToxData$Construct, p.adj="bonf")
 Twildf <- Twil$p.value
 write.xlsx(x= Twildf, file = "ToxWilcox.xlsx")
 }
+
+
+
+####################################################################################################
+#Make a pretty table
+####################################################################################################
+HiBiT$Construct <- gsub(" ", "", HiBiT$Construct, fixed=T)
+HiBiT <- HiBiT %>% select(-Plasmid)
+HiBiT <- HiBiT %>% select(-Number)
+HiBiT <- HiBiT %>% select(-POI)
+HiBiT <- HiBiT %>% select(-ends_with(" Date"))
+HiBiT <- HiBiT %>% select(-ends_with(" Expression"))
+#ExpCon  #list of all the experimental constructs
+HiBiT2 <- subset(HiBiT, Construct %in% ExpCon)
+HiBiT2 <- melt(HiBiT2, id= c('Construct', 'Description'))
+HiBiT3 <- HiBiT2 %>%
+  group_by(Construct) %>%
+  summarize(Mean_LUM = mean(value, na.rm=T))
+HiBiT3$Mean_Expression <- with(HiBiT3, ifelse(Mean_LUM >20000,"Very High",
+                                              ifelse(Mean_LUM >4999,"High", 
+                                                     ifelse(Mean_LUM >999,"Medium",
+                                                            ifelse(Mean_LUM >99,"Low",
+                                                                   ifelse(Mean_LUM >19, "Very Low",
+                                                                          ifelse(Mean_LUM >0, "None", "")))))))
+
+
+
+#Uing flextable package
+#https://ardata-fr.github.io/officeverse/officer-for-powerpoint.html
+#https://ardata-fr.github.io/flextable-book/table-design.html
+library("flextable")
+library(scales)
+
+if (length(ToxList) > 2) {
+  MeanMerge <- merge(MeanList, ToxMeanList, c("Construct", "Descriptions", "Control"), all = TRUE )
+  MeanMerge <- MeanMerge %>% select(-n)
+  MeanMerge <- MeanMerge %>% select(-Control)
+  ToxCols <- as.vector(colnames(MeanMerge %>% select(ends_with('_Tox'))))
+} else {
+  MeanMerge <- MeanList
+  MeanMerge <- MeanMerge %>% select(-Control)
+}
+
+
+
+ColOrder <- c("Construct","Descriptions", "FAW_Mean","ECB_Mean","CEW_Mean", "SL_Mean", "BCW_Mean", "SCR_Mean", "Cry1Fa-rFAW_Mean", "Vip3a-rFAW_Mean", "Early_Tox", "Late_Tox")
+ColOrder <- ColOrder[ColOrder %in% colnames(MeanMerge)]
+MeanMerge <- MeanMerge[ColOrder]
+MergeCols <- as.vector(colnames(MeanMerge %>% select(ends_with('_Mean'))))
+MeanMerge <- merge(MeanMerge, HiBiT3, "Construct", all = TRUE )
+MeanMerge <- MeanMerge %>% select(-Mean_LUM)
+
+
+
+colourer <- col_numeric(
+  palette = c("olivedrab3", "gold1", "firebrick1"),
+  domain = c(1, 3))
+colourer2 <- col_numeric(
+  palette = c("olivedrab3", "gold1", "firebrick1"),
+  domain = c(1, 4))
+
+ft <- flextable(MeanMerge)
+ft <- bg( ft, bg = colourer,
+          j = MergeCols, part = "body")
+ft <- bg( ft, bg = colourer2,
+          j = ToxCols, part = "body")
+ft <- ft %>% 
+  bg(~ Mean_Expression == "None", bg = "firebrick", j= "Mean_Expression")  %>% 
+  bg(~ Mean_Expression == "Very Low", bg = "firebrick1", j= "Mean_Expression") %>% 
+  bg(~ Mean_Expression == "Low", bg = "orange", j= "Mean_Expression") %>% 
+  bg(~ Mean_Expression == "Medium", bg = "gold1", j= "Mean_Expression") %>% 
+  bg(~ Mean_Expression == "High", bg = "olivedrab3", j= "Mean_Expression") %>% 
+  bg(~ Mean_Expression == "Very High", bg = "olivedrab", j= "Mean_Expression") %>% 
+  bg(~ Mean_Expression == "Detected", bg = "olivedrab3", j= "Mean_Expression")  %>% 
+  bg(~ Mean_Expression == "Faint", bg = "orange", j= "Mean_Expression") %>% 
+  bg(~ Mean_Expression == "Not Detected", bg = "firebrick", j= "Mean_Expression")
+ft <- theme_booktabs(ft, bold_header = TRUE) 
+ft <- align(ft, align = "center")
+ft <- fontsize(ft, size= 10, part = "all")
+ft <- set_table_properties(ft, layout = "fixed")
+
+
+
+
+
 
 
 
