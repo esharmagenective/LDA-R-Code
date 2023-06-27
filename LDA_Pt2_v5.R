@@ -72,7 +72,9 @@ library(readxl)
 library("writexl")
 library(multcompView)
 library("stringr") 
-library('officer') #new 9/22/22
+library('officer') 
+library("flextable") #new 6/27/23
+library("scales") #new 6/27/23
 mytheme <-  theme(panel.grid.minor=element_blank(), #gets rid of grey and lines in the middle
                   panel.grid.major=element_blank(), #gets rid of grey and lines in the middle
                   #panel.background=element_rect(fill="white"),#gets rid of grey and lines in the middle
@@ -544,8 +546,7 @@ HiBiT3$Mean_Expression <- with(HiBiT3, ifelse(Mean_LUM >20000,"Very High",
 #Uing flextable package
 #https://ardata-fr.github.io/officeverse/officer-for-powerpoint.html
 #https://ardata-fr.github.io/flextable-book/table-design.html
-library("flextable")
-library(scales)
+
 
 if (length(ToxList) > 2) {
   MeanMerge <- merge(MeanList, ToxMeanList, c("Construct", "Descriptions", "Control"), all = TRUE )
