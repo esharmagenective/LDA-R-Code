@@ -2,14 +2,14 @@
 #remember to replace TP with TWP
 
 ## ID of Experiment: 
-Experiment <- "23059"
-Experiment_Title <- "23059: GUN1226A"
-Version <- "C"  #change this if you are doing multiple runs
+Experiment <- "23066"
+Experiment_Title <- "23066"
+Version <- "TEST_E"  #change this if you are doing multiple runs
 
 
 
 #Place Construct List in R working directory
-ConstructListFile <- "23059_Constructs.xlsx"
+ConstructListFile <- "23066_Constructs.xlsx"
 
 
 #Update Controls List if necessary: keep in order of ZsGreen, tox negative control, other controls
@@ -27,28 +27,6 @@ xtext <- 8
 #End Editing here, just run the script and hope.
 ####################################################################################################
 ####################################################################################################
-User <- as.character(Sys.info()["user"])
-User
-if (User == "KatieDent") {
-  wd <- "C:/Users/KatieDent/OneDrive - Genective/R working"
-  RawDataFolder <- "C:/Users/KatieDent/OneDrive - Genective/R working/LDA Raw Data"
-  HiBiT <- read_excel("C:/Users/KatieDent/OneDrive - Genective/Data/Western Blots/HiBiT Results_Read Only.xlsx")
-} else {
-  if ( User == "EshaSharma") {
-    wd <- "C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Desktop/R Studio/LDA Data"
-    RawDataFolder <- "C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Desktop/R Studio/LDA Data/LDA Raw Data"
-    HiBiT <- read_excel("C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Data/Western Blots/HiBiT Results_Read Only.xlsx")
-  } else {
-    if ( User == "LindseyBehrens") {
-      wd <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working"
-      RawDataFolder <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working/LDA Raw Data"
-      Sys.setenv(JAVA_HOME="C:/Program Files/Eclipse Adoptium/jre-11.0.19.7-hotspot")
-      HiBiT <- read_excel("C:/Users/LindseyBehrens/OneDrive - Genective/Data/Western Blots/HiBiT Results_Read Only.xlsx")
-    }
-  }
-}
-setwd(wd)
-
 #Packages to install
 library(MASS)
 library(car)
@@ -75,6 +53,33 @@ library("stringr")
 library('officer') 
 library("flextable") #new 6/27/23
 library("scales") #new 6/27/23
+
+
+User <- as.character(Sys.info()["user"])
+User
+if (User == "KatieDent") {
+  wd <- "C:/Users/KatieDent/OneDrive - Genective/R working"
+  RawDataFolder <- "C:/Users/KatieDent/OneDrive - Genective/R working/LDA Raw Data"
+  HiBiT <- read_excel("C:/Users/KatieDent/OneDrive - Genective/Data/Western Blots/HiBiT Results_Read Only.xlsx")
+  West <- "C:/Users/KatieDent/OneDrive - Genective/Data/Western Blots/Western Blot Results.xlsx"
+} else {
+  if ( User == "EshaSharma") {
+    wd <- "C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Desktop/R Studio/LDA Data"
+    RawDataFolder <- "C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Desktop/R Studio/LDA Data/LDA Raw Data"
+    HiBiT <- read_excel("C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Data/Western Blots/HiBiT Results_Read Only.xlsx")
+    West <- "C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Data/Western Blots/Western Blot Results.xlsx"
+  } else {
+    if ( User == "LindseyBehrens") {
+      wd <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working"
+      RawDataFolder <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working/LDA Raw Data"
+      Sys.setenv(JAVA_HOME="C:/Program Files/Eclipse Adoptium/jre-11.0.19.7-hotspot")
+      HiBiT <- read_excel("C:/Users/LindseyBehrens/OneDrive - Genective/Data/Western Blots/HiBiT Results_Read Only.xlsx")
+      West <- "C:/Users/LindseyBehrens/OneDrive - Genective/Data/Western Blots/Western Blot Results.xlsx"
+    }
+  }
+}
+setwd(wd)
+
 mytheme <-  theme(panel.grid.minor=element_blank(), #gets rid of grey and lines in the middle
                   panel.grid.major=element_blank(), #gets rid of grey and lines in the middle
                   #panel.background=element_rect(fill="white"),#gets rid of grey and lines in the middle
@@ -277,7 +282,7 @@ colnames(FeedPvals) <- c("Construct", "Pest", "PVal", "sig")
 FeedingData2 <- merge(FeedingData, FeedPvals, by.x=c("Construct", 'Pest'), by.y=c("Construct", 'Pest'))
 head(FeedingData2)
 
-
+resultsfile <- paste(folder, "Results", sep="_")
 MeanList <- Descriptions
 MeanList$Description <- NULL
 for (Bug in Bugs) {
@@ -292,7 +297,8 @@ MeanList$mean <- NULL
 MeanList$Construct <- as.character(MeanList$Construct)
 OrderList <- c(ConCon,ExpCon)
 MeanList <- MeanList[match(OrderList, MeanList$Construct),]
-write.xlsx(x= MeanList, file = "MeanList.xlsx")
+MeanList <- MeanList %>% select(-Control)
+write.xlsx(x= MeanList, file = "resultsfile.xlsx", sheetName = MeanList, append=TRUE)
 
 
 NList <- Descriptions
@@ -309,7 +315,8 @@ NList$n <- NULL
 NList$Construct <- as.character(NList$Construct)
 OrderList <- c(ConCon,ExpCon)
 NList <- NList[match(OrderList, NList$Construct),]
-write.xlsx(x= NList, file = "n_List.xlsx")
+NList <- NList %>% select(-Control)
+write.xlsx(x= NList, file = "resultsfile.xlsx", sheetName = NList, append=TRUE)
 
 
 
@@ -463,8 +470,9 @@ Tavg2 <- Tavg[,c("Construct", "Early_Tox", "Late_Tox", "n")]
 ToxMeanList <- Descriptions
 ToxMeanList$Description <- NULL
 ToxMeanList <- merge(ToxMeanList, Tavg2, "Construct")
+ToxMeanList <- ToxMeanList %>% select(-Control)
 ToxMeanList
-write.xlsx(x= ToxMeanList, file = "ToxMeanList.xlsx")
+write.xlsx(x= ToxMeanList, file = "resultsfile.xlsx", sheetName = ToxMeanList, append=TRUE)
 }
 
 
@@ -546,12 +554,46 @@ HiBiT3$Mean_Expression <- with(HiBiT3, ifelse(Mean_LUM >20000,"Very High",
 #Uing flextable package
 #https://ardata-fr.github.io/officeverse/officer-for-powerpoint.html
 #https://ardata-fr.github.io/flextable-book/table-design.html
+West1 <- read_excel(West, "4.21-8.22")
+West2 <- read_excel(West, "8.22-12.22")
+West3 <- read_excel(West, "2023")
+
+West1 <- West1[ , c("Construct", "Construct Description", "Infiltration Date", "Westernblot Date", "Antibody", "Summary of Results")]
+West2 <- West2[ , c("Construct", "Construct Description", "Infiltration Date", "Westernblot Date", "Antibody", "Summary of Results")]
+West3 <- West3[ , c("Construct", "Construct Description", "Infiltration Date", "Westernblot Date", "Antibody", "Summary of Results")]
+
+Western_Results <- rbind(West1, West2, West3)
+Western_Results$Construct <- gsub(" ", "", Western_Results$Construct, fixed=T)
+Western_Results <- subset(Western_Results, Construct %in% ExpCon)
+colnames(Western_Results)[colnames(Western_Results) == "Summary of Results"] <- "Results"
+Western_Results$`Westernblot Date` <- format(Western_Results$`Westernblot Date`, format="%m/%d/%Y")
+head(Western_Results)
+write.xlsx(x= Western_Results, file = "resultsfile.xlsx", sheetName = Western_Results, append=TRUE)
+
+
+
+Western_Table <- flextable(Western_Results)
+Western_Table <- Western_Table %>% 
+  bg(~ Results == "None", bg = "firebrick", j= "Results")  %>% 
+  bg(~ Results == "Very Low", bg = "firebrick1", j= "Results") %>% 
+  bg(~ Results == "Low", bg = "orange", j= "Results") %>% 
+  bg(~ Results == "Medium", bg = "gold1", j= "Results") %>% 
+  bg(~ Results == "High", bg = "olivedrab3", j= "Results") %>% 
+  bg(~ Results == "Very High", bg = "olivedrab", j= "Results") %>% 
+  bg(~ Results == "Detected", bg = "olivedrab3", j= "Results")  %>% 
+  bg(~ Results == "Faint", bg = "orange", j= "Results") %>% 
+  bg(~ Results == "Not Detected", bg = "firebrick", j= "Results")
+Western_Table <- theme_booktabs(Western_Table, bold_header = TRUE) 
+Western_Table <- align(Western_Table, align = "center")
+Western_Table <- fontsize(Western_Table, size= 10, part = "all")
+Western_Table <- set_table_properties(Western_Table, layout = "fixed")
+
+
 
 
 if (length(ToxList) > 2) {
-  MeanMerge <- merge(MeanList, ToxMeanList, c("Construct", "Descriptions", "Control"), all = TRUE )
+  MeanMerge <- merge(MeanList, ToxMeanList, c("Construct", "Descriptions"), all = TRUE )
   MeanMerge <- MeanMerge %>% select(-n)
-  MeanMerge <- MeanMerge %>% select(-Control)
   ToxCols <- as.vector(colnames(MeanMerge %>% select(ends_with('_Tox'))))
 } else {
   MeanMerge <- MeanList
@@ -600,8 +642,11 @@ ft <- set_table_properties(ft, layout = "fixed")
 
 
 
-
-
+N_table <- flextable(NList)
+N_table <- theme_booktabs(N_table, bold_header = TRUE) 
+N_table <- align(N_table, align = "center")
+N_table <- fontsize(N_table, size= 10, part = "all")
+N_table <- set_table_properties(N_table, layout = "fixed")
 
 
 
@@ -667,7 +712,7 @@ slides <- ph_with(slides, value = date2, location = ph_location_type(type = "dt"
 #Feeding Stat Summary Slide
 slides <- add_slide(slides, layout= "Title and Content")
 slides <- ph_with(slides, value = "Transient Assay Summary", location = ph_location_type(type = "title"))
-slides <- ph_with(slides, value = MeanList, location = loc_table)
+slides <- ph_with(slides, value = ft, location = loc_table)
 slides <- ph_with(slides, value = "Confidential", location = ph_location_type(type = "ftr"))
 slides <- ph_with(slides, external_img(logo), location = loc_logo)
 slides <- ph_with(slides, value = date2, location = ph_location_type(type = "dt"))
@@ -750,10 +795,19 @@ slides <- ph_with(slides, external_img(logo), location = loc_logo)
 slides <- ph_with(slides, value = date2, location = ph_location_type(type = "dt"))
 
 
+#Expression Slide
+slides <- add_slide(slides, layout= "Title and Content")
+slides <- ph_with(slides, value = "Expression Results", location = ph_location_type(type = "title"))
+slides <- ph_with(slides, value = Western_Table, location = loc_table)
+slides <- ph_with(slides, value = "Confidential", location = ph_location_type(type = "ftr"))
+slides <- ph_with(slides, external_img(logo), location = loc_logo)
+slides <- ph_with(slides, value = date2, location = ph_location_type(type = "dt"))
+
+
 # n= slide
 slides <- add_slide(slides, layout= "Title and Content")
 slides <- ph_with(slides, value = "Replicates Used", location = ph_location_type(type = "title"))
-slides <- ph_with(slides, value = NList, location = loc_table)
+slides <- ph_with(slides, value = N_table, location = loc_table)
 slides <- ph_with(slides, value = "Confidential", location = ph_location_type(type = "ftr"))
 slides <- ph_with(slides, external_img(logo), location = loc_logo)
 slides <- ph_with(slides, value = date2, location = ph_location_type(type = "dt"))
