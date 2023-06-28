@@ -4,7 +4,7 @@
 ## ID of Experiment: 
 Experiment <- "23076"
 Experiment_Title <- "23076: Vip3a-rFAW test for EB"
-Version <- "A"  #change this if you are doing multiple runs
+Version <- "A_TEST"  #change this if you are doing multiple runs
 
 
 
@@ -27,6 +27,31 @@ xtext <- 8
 #End Editing here, just run the script and hope.
 ####################################################################################################
 ####################################################################################################
+User <- as.character(Sys.info()["user"])
+User
+if (User == "KatieDent") {
+  wd <- "C:/Users/KatieDent/OneDrive - Genective/R working"
+  RawDataFolder <- "C:/Users/KatieDent/OneDrive - Genective/R working/LDA Raw Data"
+  HiBiT_file <- "C:/Users/KatieDent/OneDrive - Genective/Data/Western Blots/HiBiT Results_Read Only.xlsx"
+  West <- "C:/Users/KatieDent/OneDrive - Genective/Data/Western Blots/Western Blot Results.xlsx"
+} else {
+  if ( User == "EshaSharma") {
+    wd <- "C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Desktop/R Studio/LDA Data"
+    RawDataFolder <- "C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Desktop/R Studio/LDA Data/LDA Raw Data"
+    HiBiT_file <- "C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Data/Western Blots/HiBiT Results_Read Only.xlsx"
+    West <- "C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Data/Western Blots/Western Blot Results.xlsx"
+  } else {
+    if ( User == "LindseyBehrens") {
+      wd <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working"
+      RawDataFolder <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working/LDA Raw Data"
+      Sys.setenv(JAVA_HOME="C:/Program Files/Eclipse Adoptium/jre-11.0.19.7-hotspot")
+      HiBiT_file <- "C:/Users/LindseyBehrens/OneDrive - Genective/Data/Western Blots/HiBiT Results_Read Only.xlsx"
+      West <- "C:/Users/LindseyBehrens/OneDrive - Genective/Data/Western Blots/Western Blot Results.xlsx"
+    }
+  }
+}
+setwd(wd)
+
 #Packages to install
 library(MASS)
 library(car)
@@ -53,32 +78,6 @@ library("stringr")
 library('officer') 
 library("flextable") #new 6/27/23
 library("scales") #new 6/27/23
-
-
-User <- as.character(Sys.info()["user"])
-User
-if (User == "KatieDent") {
-  wd <- "C:/Users/KatieDent/OneDrive - Genective/R working"
-  RawDataFolder <- "C:/Users/KatieDent/OneDrive - Genective/R working/LDA Raw Data"
-  HiBiT <- read_excel("C:/Users/KatieDent/OneDrive - Genective/Data/Western Blots/HiBiT Results_Read Only.xlsx")
-  West <- "C:/Users/KatieDent/OneDrive - Genective/Data/Western Blots/Western Blot Results.xlsx"
-} else {
-  if ( User == "EshaSharma") {
-    wd <- "C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Desktop/R Studio/LDA Data"
-    RawDataFolder <- "C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Desktop/R Studio/LDA Data/LDA Raw Data"
-    HiBiT <- read_excel("C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Data/Western Blots/HiBiT Results_Read Only.xlsx")
-    West <- "C:/Users/EshaSharma/Onedrive - EshaSharma/OneDrive - Genective/Data/Western Blots/Western Blot Results.xlsx"
-  } else {
-    if ( User == "LindseyBehrens") {
-      wd <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working"
-      RawDataFolder <- "C:/Users/LindseyBehrens/OneDrive - Genective/Documents/R Working/LDA Raw Data"
-      Sys.setenv(JAVA_HOME="C:/Program Files/Eclipse Adoptium/jre-11.0.19.7-hotspot")
-      HiBiT <- read_excel("C:/Users/LindseyBehrens/OneDrive - Genective/Data/Western Blots/HiBiT Results_Read Only.xlsx")
-      West <- "C:/Users/LindseyBehrens/OneDrive - Genective/Data/Western Blots/Western Blot Results.xlsx"
-    }
-  }
-}
-setwd(wd)
 
 mytheme <-  theme(panel.grid.minor=element_blank(), #gets rid of grey and lines in the middle
                   panel.grid.major=element_blank(), #gets rid of grey and lines in the middle
@@ -531,6 +530,7 @@ write.xlsx(x= Twildf, file = "ToxWilcox.xlsx")
 ####################################################################################################
 #Make a pretty table
 ####################################################################################################
+HiBiT <- read_excel(HiBiT_file)
 HiBiT$Construct <- gsub(" ", "", HiBiT$Construct, fixed=T)
 HiBiT <- HiBiT %>% select(-Plasmid)
 HiBiT <- HiBiT %>% select(-Number)
@@ -568,6 +568,7 @@ Western_Results$Construct <- gsub(" ", "", Western_Results$Construct, fixed=T)
 Western_Results <- subset(Western_Results, Construct %in% ExpCon)
 colnames(Western_Results)[colnames(Western_Results) == "Summary of Results"] <- "Results"
 Western_Results$`Westernblot Date` <- format(Western_Results$`Westernblot Date`, format="%m/%d/%Y")
+Western_Results$`Infiltration Date` <- format(Western_Results$`Infiltration Date`, format="%m/%d/%Y")
 Western_Results <- Western_Results[order(Western_Results$Construct), ]
 write.xlsx(x= Western_Results, file = "resultsfile.xlsx", sheetName = Western_Results, append=TRUE)
 
