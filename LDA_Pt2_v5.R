@@ -2,14 +2,14 @@
 #remember to replace TP with TWP
 
 ## ID of Experiment: 
-Experiment <- "23066"
-Experiment_Title <- "23066"
-Version <- "TEST_E"  #change this if you are doing multiple runs
+Experiment <- "23076"
+Experiment_Title <- "23076: Vip3a-rFAW test for EB"
+Version <- "A"  #change this if you are doing multiple runs
 
 
 
 #Place Construct List in R working directory
-ConstructListFile <- "23066_Constructs.xlsx"
+ConstructListFile <- "23076_Constructs.xlsx"
 
 
 #Update Controls List if necessary: keep in order of ZsGreen, tox negative control, other controls
@@ -446,31 +446,32 @@ ToxData$Construct <- droplevels(ToxData$Construct) #Drops constructs with no dat
 }
 ToxData$Late_Tox <- as.numeric(ToxData$Late_Tox)
 ToxData$Early_Tox <- as.numeric(ToxData$Early_Tox)
+ToxData <- ToxData %>% select(-Gene)
+ToxData <- ToxData %>% select(-Control)
 
 if (length(ToxList) > 2) {
 #Tox averages
 Tavg <- ToxData %>%
     group_by(Construct) %>%
-    summarize(Late_min = min(Late_Tox),
-              Late_q1 = quantile(Late_Tox, 0.25),
-              Late_median = median(Late_Tox),
-              Late_Tox = mean(Late_Tox),
-              Late_q3 = quantile(Late_Tox, 0.75),
-              Late_max = max(Late_Tox),
+    summarize(Late_min = min(Late_Tox, na.rm=T),
+              Late_q1 = quantile(Late_Tox, 0.25, na.rm=T),
+              Late_median = median(Late_Tox, na.rm=T),
+              Late_Tox = mean(Late_Tox, na.rm=T),
+              Late_q3 = quantile(Late_Tox, 0.75, na.rm=T),
+              Late_max = max(Late_Tox, na.rm=T),
               n = length(Late_Tox),
-              Early_min = min(Early_Tox),
-              Early_q1 = quantile(Early_Tox, 0.25),
-              Early_median = median(Early_Tox),
-              Early_Tox = mean(Early_Tox),
-              Early_q3 = quantile(Early_Tox, 0.75),
-              Early_max = max(Early_Tox))
+              Early_min = min(Early_Tox, na.rm=T),
+              Early_q1 = quantile(Early_Tox, 0.25, na.rm=T),
+              Early_median = median(Early_Tox, na.rm=T),
+              Early_Tox = mean(Early_Tox, na.rm=T),
+              Early_q3 = quantile(Early_Tox, 0.75, na.rm=T),
+              Early_max = max(Early_Tox, na.rm=T))
   write.xlsx(x= Tavg, file = "ToxStats.xlsx")
 Tavg2 <- Tavg[,c("Construct", "Early_Tox", "Late_Tox", "n")]
 
 ToxMeanList <- Descriptions
 ToxMeanList$Description <- NULL
 ToxMeanList <- merge(ToxMeanList, Tavg2, "Construct")
-ToxMeanList <- ToxMeanList %>% select(-Control)
 ToxMeanList
 write.xlsx(x= ToxMeanList, file = "resultsfile.xlsx", sheetName = ToxMeanList, append=TRUE)
 }
@@ -482,7 +483,7 @@ if (length(ToxList) > 2) {
   tox.av <- aov(mod_tox)
 #tukey post hoc test
   TUKEY2 <- TukeyHSD(tox.av)
-  plot(TUKEY2) #shows 95% CI of a pairwise contrast. 
+  #plot(TUKEY2) #shows 95% CI of a pairwise contrast. 
 #make the letters for plotting:
   cld2 <- multcompLetters4(tox.av, TUKEY2)
 # table with factors and 3rd quantile
@@ -567,7 +568,7 @@ Western_Results$Construct <- gsub(" ", "", Western_Results$Construct, fixed=T)
 Western_Results <- subset(Western_Results, Construct %in% ExpCon)
 colnames(Western_Results)[colnames(Western_Results) == "Summary of Results"] <- "Results"
 Western_Results$`Westernblot Date` <- format(Western_Results$`Westernblot Date`, format="%m/%d/%Y")
-head(Western_Results)
+Western_Results <- Western_Results[order(Western_Results$Construct), ]
 write.xlsx(x= Western_Results, file = "resultsfile.xlsx", sheetName = Western_Results, append=TRUE)
 
 
@@ -584,29 +585,34 @@ Western_Table <- Western_Table %>%
   bg(~ Results == "Faint", bg = "orange", j= "Results") %>% 
   bg(~ Results == "Not Detected", bg = "firebrick", j= "Results")
 Western_Table <- theme_booktabs(Western_Table, bold_header = TRUE) 
-Western_Table <- align(Western_Table, align = "center")
 Western_Table <- fontsize(Western_Table, size= 10, part = "all")
 Western_Table <- set_table_properties(Western_Table, layout = "fixed")
+Western_Table <- align(Western_Table, align = "center")
 
 
 
 
 if (length(ToxList) > 2) {
-  MeanMerge <- merge(MeanList, ToxMeanList, c("Construct", "Descriptions"), all = TRUE )
+  MeanMerge <- MeanList
+  MeanMerge$order <- c(1:(length(MeanMerge$Construct)))
+  MeanMerge <- merge(MeanMerge, ToxMeanList, c("Construct", "Descriptions"), all = TRUE )
   MeanMerge <- MeanMerge %>% select(-n)
   ToxCols <- as.vector(colnames(MeanMerge %>% select(ends_with('_Tox'))))
+  
 } else {
   MeanMerge <- MeanList
-  MeanMerge <- MeanMerge %>% select(-Control)
+  MeanMerge$order <- 1:(length(MeanMerge$Construct))
 }
 
 
-
-ColOrder <- c("Construct","Descriptions", "FAW_Mean","ECB_Mean","CEW_Mean", "SL_Mean", "BCW_Mean", "SCR_Mean", "Cry1Fa-rFAW_Mean", "Vip3a-rFAW_Mean", "Early_Tox", "Late_Tox")
+ColOrder <- c("Construct","Descriptions", "FAW_Mean","ECB_Mean","CEW_Mean", "SL_Mean", "BCW_Mean", "SCR_Mean", "Cry1Fa-rFAW_Mean", "Vip3a-rFAW_Mean", "Early_Tox", "Late_Tox", "order")
 ColOrder <- ColOrder[ColOrder %in% colnames(MeanMerge)]
+MeanMerge$order <- MeanMerge$order %>% replace(is.na(.), 0)
 MeanMerge <- MeanMerge[ColOrder]
 MergeCols <- as.vector(colnames(MeanMerge %>% select(ends_with('_Mean'))))
 MeanMerge <- merge(MeanMerge, HiBiT3, "Construct", all = TRUE )
+MeanMerge <- MeanMerge[order(MeanMerge$order), ]
+MeanMerge <- MeanMerge %>% select(-order)
 MeanMerge <- MeanMerge %>% select(-Mean_LUM)
 
 
@@ -621,8 +627,10 @@ colourer2 <- col_numeric(
 ft <- flextable(MeanMerge)
 ft <- bg( ft, bg = colourer,
           j = MergeCols, part = "body")
+if (length(ToxList) > 2) {
 ft <- bg( ft, bg = colourer2,
           j = ToxCols, part = "body")
+}
 ft <- ft %>% 
   bg(~ Mean_Expression == "None", bg = "firebrick", j= "Mean_Expression")  %>% 
   bg(~ Mean_Expression == "Very Low", bg = "firebrick1", j= "Mean_Expression") %>% 
@@ -634,9 +642,9 @@ ft <- ft %>%
   bg(~ Mean_Expression == "Faint", bg = "orange", j= "Mean_Expression") %>% 
   bg(~ Mean_Expression == "Not Detected", bg = "firebrick", j= "Mean_Expression")
 ft <- theme_booktabs(ft, bold_header = TRUE) 
-ft <- align(ft, align = "center")
 ft <- fontsize(ft, size= 10, part = "all")
 ft <- set_table_properties(ft, layout = "fixed")
+ft <- align(ft, align = "center")
 
 
 
@@ -644,9 +652,9 @@ ft <- set_table_properties(ft, layout = "fixed")
 
 N_table <- flextable(NList)
 N_table <- theme_booktabs(N_table, bold_header = TRUE) 
-N_table <- align(N_table, align = "center")
 N_table <- fontsize(N_table, size= 10, part = "all")
 N_table <- set_table_properties(N_table, layout = "fixed")
+N_table <- align(N_table, align = "center")
 
 
 
